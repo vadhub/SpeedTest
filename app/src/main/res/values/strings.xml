@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SpeedTest</string>
+    <string name="speedtest">SPEEDTEST</string>
+    <string name="max_speed">MAX SPEED</string>
+    <string name="ping">PING</string>
+    <string name="download">DOWNLOAD</string>
+</resources>
