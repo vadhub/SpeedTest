@@ -10,13 +10,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import okhttp3.Call
 import okhttp3.Callback
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Request.Builder
 import okhttp3.Response
-import java.io.BufferedInputStream
 import java.io.IOException
-import kotlin.math.roundToInt
 
 
 class MainActivity : ComponentActivity() {
@@ -35,36 +34,88 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        val downloadClient: OkHttpClient = OkHttpClient().newBuilder().build()
-        val downloadURL = "http://10.0.2.2:8081/files/search?type=5Mb"
-        val download: Request = Builder()
-            .url(downloadURL)
+        val request: Request = Builder()
+            .url("https://publicobject.com/helloworld.txt")
             .build()
 
-        downloadClient.newCall(download).enqueue(object : Callback {
+        val client: OkHttpClient = OkHttpClient.Builder()
+            .addNetworkInterceptor(Interceptor { chain: Interceptor.Chain ->
+                val originalResponse = chain.proceed(chain.request())
+                originalResponse.newBuilder()
+                    .body(ProgressResponseBody(originalResponse.body, progressListener))
+                    .build()
+            })
+            .build()
+
+        client.newCall(request).enqueue(object : Callback{
             override fun onFailure(call: Call, e: IOException) {
-                Log.d("download", e.message.toString())
+                println(e)
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val startTime = System.currentTimeMillis()
-                val inputStream = response.body!!.byteStream()
-                val bis = BufferedInputStream(inputStream)
-                var size: Long = 0
-                var red = 0
-                val buf = ByteArray(1024)
-                while (bis.read(buf).also { red = it } != -1) {
-                    size += red.toLong()
-                }
-                val endTime = System.currentTimeMillis()
-                var rate = size / 1024 / ((endTime - startTime) / 1000.0) * 8
-                rate = (rate * 100.0).roundToInt() / 100.0
-                val ratevalue: String = if (rate > 1000) (rate / 1024).toString() + " Mbps" else "${rate.roundToInt()} Kbps"
-                inputStream.close()
-                bis.close()
-                Log.d("download", "download speed = $ratevalue")
+                if (!response.isSuccessful) throw IOException("Unexpected code $response")
+                println(true)
             }
 
         })
+
     }
+
+    val progressListener: ProgressListener = object : ProgressListener {
+        var firstUpdate = true
+        override fun update(bytesRead: Long, contentLength: Long, done: Boolean) {
+
+            if (done) {
+                println("completed")
+            } else {
+                if (firstUpdate) {
+                    firstUpdate = false
+                    if (contentLength == -1L) {
+                        println("content-length: unknown")
+                    } else {
+                        System.out.format("content-length: %d\n", contentLength)
+                    }
+                }
+                println(bytesRead)
+                if (contentLength != -1L) {
+                    Log.d("dddd", String.format("%d%% done\n", 100 * bytesRead / contentLength))
+                }
+            }
+        }
+    }
+
+//    private fun measureInternetSpeed() {
+//        val downloadClient: OkHttpClient = OkHttpClient().newBuilder().build()
+//        val request = Builder()
+//            .url("http://speedtest.tele2.net/100MB.zip") // Пример URL для скачивания 100МБ файла в тестовых целях
+//            .build();
+//
+//        // Запускаем запрос и измеряем время
+//        val startTime = System.currentTimeMillis();
+//        downloadClient.newCall(request).enqueue(object : Callback {
+//            override fun onFailure(call: Call, e: IOException) {
+//
+//            }
+//
+//            override fun onResponse(call: Call, response: Response) {
+//                if (!response.isSuccessful) {
+//                    throw IOException("Unexpected code $response");
+//                }
+//
+//                val endTime = System.currentTimeMillis();
+//                val totalTime = endTime - startTime;
+//                val fileSize = response.body!!.contentLength();
+//
+//                // Вычисляем скорость передачи данных
+//                val downloadSpeed =
+//                    (fileSize / 1024) / (totalTime / 1000); // в килобайтах в секунду
+//
+//                // Обновляем UI с результатами измерения скорости
+//
+//                Log.d("test", String.format("Скорость: %.2f КБ/с", downloadSpeed.toFloat()))
+//
+//            }
+//
+//        });
+//    }
 }
