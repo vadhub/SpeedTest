@@ -1,11 +1,7 @@
 package com.abg.speedtest
 
 import SpeedTestTheme
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
-import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.keyframes
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -28,9 +24,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -50,53 +43,10 @@ import com.abg.speedtest.ui.theme.Green200
 import com.abg.speedtest.ui.theme.Green500
 import com.abg.speedtest.ui.theme.GreenGradient
 import com.abg.speedtest.ui.theme.LightColor
-import kotlinx.coroutines.launch
 import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.roundToInt
-
-//all ui components is customizable
-//screens of speed
-@Composable
-fun SpeedTestScreen() {
-    val coroutineScope = rememberCoroutineScope()
-
-    val animation = remember { Animatable(0f) }
-    val maxSpeed = remember { mutableFloatStateOf(0f) }
-    maxSpeed.floatValue = max(maxSpeed.floatValue, animation.value * 100f)
-
-    SpeedTestScreen(state = animation.toUiState(maxSpeed.floatValue)) {
-        coroutineScope.launch {
-            maxSpeed.floatValue = 0f
-            startAnimation(animation)
-        }
-    }
-}
-//static values for animtations
-suspend fun startAnimation(animation: Animatable<Float, AnimationVector1D>) {
-    animation.animateTo(0.84f, keyframes {
-        durationMillis = 9000
-        0f at 0 with CubicBezierEasing(0f, 1.5f, 0.8f, 1f)
-        0.72f at 1000 with CubicBezierEasing(0.2f, -1.5f, 0f, 1f)
-        0.76f at 2000 with CubicBezierEasing(0.2f, -2f, 0f, 1f)
-        0.78f at 3000 with CubicBezierEasing(0.2f, -1.5f, 0f, 1f)
-        0.82f at 4000 with CubicBezierEasing(0.2f, -2f, 0f, 1f)
-        0.85f at 5000 with CubicBezierEasing(0.2f, -2f, 0f, 1f)
-        0.89f at 6000 with CubicBezierEasing(0.2f, -1.2f, 0f, 1f)
-        0.82f at 7500 with LinearOutSlowInEasing
-    })
-}
-
-fun Animatable<Float, AnimationVector1D>.toUiState(maxSpeed: Float) = UiState(
-    arcValue = value,
-    speed = "%.1f".format(value * 100),
-    ping = if (value > 0.2f) "${(value * 15).roundToInt()} ms" else "-",
-    maxSpeed = if (maxSpeed > 0f) "%.1f mbps".format(maxSpeed) else "-",
-    inProgress = isRunning
-)
 
 @Composable
-private fun SpeedTestScreen(state: UiState, onClick: () -> Unit) {
+fun SpeedTestScreen(speed: Double, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -104,23 +54,23 @@ private fun SpeedTestScreen(state: UiState, onClick: () -> Unit) {
             .background(DarkGradient),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
+        Log.d("sss", speed.toString())
         Header()
-        SpeedIndicator(state = state, onClick = onClick)
-        AdditionalInfo(state.ping, state.maxSpeed)
+        SpeedIndicator(onClick = onClick)
     }
 }
 
 @Composable
-fun SpeedIndicator(state: UiState, onClick: () -> Unit) {
+fun SpeedIndicator(onClick: () -> Unit) {
     Box(
         contentAlignment = Alignment.BottomCenter,
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
     ) {
-        CircularSpeedIndicator(state.arcValue, 240f)
-        StartButton(!state.inProgress, onClick)
-        SpeedValue(value = state.speed)
+        CircularSpeedIndicator(0F, 240f)
+        StartButton(true, onClick)
+        SpeedValue(value = "0")
     }
 }
 
@@ -287,24 +237,4 @@ fun Header() {
         modifier = Modifier.padding(top = 52.dp, bottom = 16.dp),
         style = MaterialTheme.typography.titleSmall
     )
-}
-
-//preview of composable views
-@Preview(showBackground = true)
-@Composable
-fun SpeedTestScreenPreview() {
-    SpeedTestTheme {
-        Surface {
-            SpeedTestScreen(
-                UiState(
-                    speed = "120.5",
-                    ping = "5 ms",
-                    maxSpeed = "150.0 mbps",
-                    arcValue = 0.25f
-                )
-            ) {
-
-            }
-        }
-    }
 }

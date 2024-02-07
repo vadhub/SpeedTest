@@ -2,9 +2,6 @@ package com.abg.speedtest
 
 //states model
 class UiState(
-    val speed: String = "",
-    val ping: String = "-",
-    val maxSpeed: String = "-",
-    val arcValue: Float = 0f,
+    val speed: Double = 0.0,
     val inProgress: Boolean = false
 )
