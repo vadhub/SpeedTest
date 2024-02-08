@@ -57,6 +57,7 @@ fun SpeedTestScreen(speed: Double, ping: Double, isEnabled: Boolean, onClick: ()
         Header()
         SpeedIndicator(speed, isEnabled, onClick = onClick)
         AdditionalInfo(ping = ping.toString(), maxSpeed = maxSpeed.toString())
+        Banner()
     }
 }
 
