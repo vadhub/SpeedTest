@@ -10,7 +10,6 @@ import java.net.URL;
 public class HttpDownloadTest {
 
     private String fileURL = "";
-    private double instantDownloadRate = 0;
     private final Listener listener;
 
     public HttpDownloadTest(String fileURL, Listener listener) {
@@ -30,16 +29,13 @@ public class HttpDownloadTest {
         return bd.doubleValue();
     }
 
-    public double getInstantDownloadRate() {
-        return instantDownloadRate;
-    }
-
     public void setInstantDownloadRate(int downloadedByte, double elapsedTime) {
 
+        double instantDownloadRate = 0;
         if (downloadedByte >= 0) {
-            this.instantDownloadRate = round((Double) (((downloadedByte * 8) / (1000 * 1000)) / elapsedTime));
+            instantDownloadRate = round((Double) (((downloadedByte * 8) / (1000 * 1000)) / elapsedTime));
         } else {
-            this.instantDownloadRate = 0.0;
+            instantDownloadRate = 0.0;
         }
 
         listener.getSpeed(instantDownloadRate);

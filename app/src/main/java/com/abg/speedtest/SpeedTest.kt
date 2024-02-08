@@ -1,6 +1,5 @@
 package com.abg.speedtest
 
-import SpeedTestTheme
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
@@ -21,7 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,7 +33,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.abg.speedtest.ui.theme.DarkGradient
@@ -44,9 +41,13 @@ import com.abg.speedtest.ui.theme.Green500
 import com.abg.speedtest.ui.theme.GreenGradient
 import com.abg.speedtest.ui.theme.LightColor
 import kotlin.math.floor
+import kotlin.math.max
 
 @Composable
-fun SpeedTestScreen(speed: Double, onClick: () -> Unit) {
+fun SpeedTestScreen(speed: Double, ping: Double, isEnabled: Boolean, onClick: () -> Unit) {
+    var maxSpeed = 0.0
+    maxSpeed = max(maxSpeed, speed)
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -56,21 +57,22 @@ fun SpeedTestScreen(speed: Double, onClick: () -> Unit) {
     ) {
         Log.d("sss", speed.toString())
         Header()
-        SpeedIndicator(onClick = onClick)
+        SpeedIndicator(speed, isEnabled, onClick = onClick)
+        AdditionalInfo(ping = ping.toString(), maxSpeed = maxSpeed.toString())
     }
 }
 
 @Composable
-fun SpeedIndicator(onClick: () -> Unit) {
+fun SpeedIndicator(speed: Double, isEnabled: Boolean, onClick: () -> Unit) {
     Box(
         contentAlignment = Alignment.BottomCenter,
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f)
     ) {
-        CircularSpeedIndicator(0F, 240f)
-        StartButton(true, onClick)
-        SpeedValue(value = "0")
+        CircularSpeedIndicator(speed.toFloat()/100, 240f)
+        StartButton(isEnabled, onClick)
+        SpeedValue(value = speed.toString())
     }
 }
 
