@@ -1,6 +1,5 @@
 package com.abg.speedtest
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -55,7 +54,6 @@ fun SpeedTestScreen(speed: Double, ping: Double, isEnabled: Boolean, onClick: ()
             .background(DarkGradient),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Log.d("sss", speed.toString())
         Header()
         SpeedIndicator(speed, isEnabled, onClick = onClick)
         AdditionalInfo(ping = ping.toString(), maxSpeed = maxSpeed.toString())
