@@ -40,13 +40,9 @@ import com.abg.speedtest.ui.theme.Green500
 import com.abg.speedtest.ui.theme.GreenGradient
 import com.abg.speedtest.ui.theme.LightColor
 import kotlin.math.floor
-import kotlin.math.max
 
 @Composable
-fun SpeedTestScreen(speed: Double, ping: Double, isEnabled: Boolean, onClick: () -> Unit) {
-    var maxSpeed = 0.0
-    maxSpeed = max(maxSpeed, speed)
-
+fun SpeedTestScreen(speed: Double, maxSpeed: Double, ping: Double, isEnabled: Boolean, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
