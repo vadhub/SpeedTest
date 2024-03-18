@@ -42,7 +42,7 @@ import com.abg.speedtest.ui.theme.LightColor
 import kotlin.math.floor
 
 @Composable
-fun SpeedTestScreen(speed: Double, maxSpeed: Double, ping: Double, isEnabled: Boolean, onClick: () -> Unit) {
+fun SpeedTestScreen(text: String, speed: Double, maxSpeed: Double, ping: Double, isEnabled: Boolean, onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -51,14 +51,14 @@ fun SpeedTestScreen(speed: Double, maxSpeed: Double, ping: Double, isEnabled: Bo
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Header()
-        SpeedIndicator(speed, isEnabled, onClick = onClick)
+        SpeedIndicator(text, speed, isEnabled, onClick = onClick)
         AdditionalInfo(ping = ping.toString(), maxSpeed = maxSpeed.toString())
         Banner()
     }
 }
 
 @Composable
-fun SpeedIndicator(speed: Double, isEnabled: Boolean, onClick: () -> Unit) {
+fun SpeedIndicator(text: String ,speed: Double, isEnabled: Boolean, onClick: () -> Unit) {
     Box(
         contentAlignment = Alignment.BottomCenter,
         modifier = Modifier
@@ -66,7 +66,7 @@ fun SpeedIndicator(speed: Double, isEnabled: Boolean, onClick: () -> Unit) {
             .aspectRatio(1f)
     ) {
         CircularSpeedIndicator(speed.toFloat()/100, 240f)
-        StartButton(isEnabled, onClick)
+        StartButton(text ,isEnabled, onClick)
         SpeedValue(value = speed.toString())
     }
 }
@@ -102,7 +102,7 @@ fun CircularSpeedIndicator(value: Float, angle: Float) {
 }
 
 @Composable
-fun StartButton(isEnabled: Boolean, onClick: () -> Unit) {
+fun StartButton(text: String, isEnabled: Boolean, onClick: () -> Unit) {
     OutlinedButton(
         onClick = onClick,
         modifier = Modifier.padding(bottom = 24.dp),
@@ -111,7 +111,7 @@ fun StartButton(isEnabled: Boolean, onClick: () -> Unit) {
         border = BorderStroke(width = 2.dp, color = MaterialTheme.colorScheme.onSurface)
 
     ) {
-        Text(text = "START", modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp))
+        Text(text = text, modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp))
     }
 }
 

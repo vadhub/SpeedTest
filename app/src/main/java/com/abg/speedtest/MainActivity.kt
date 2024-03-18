@@ -29,6 +29,7 @@ class MainActivity : ComponentActivity(), Listener {
 
         val mutableStatePing = MutableStateFlow(0.0)
         val mutableStateIsProgress = MutableStateFlow(false)
+        val mutableStateText = MutableStateFlow("START")
 
 
         val test = HttpDownloadTest("http://speedtest.tele2.net/100MB.zip", this)
@@ -44,14 +45,15 @@ class MainActivity : ComponentActivity(), Listener {
                     val ping = mutableStatePing.collectAsState()
                     val isEnables = mutableStateIsProgress.collectAsState()
                     val maxSpeed = mutableSpeedMax.collectAsState()
+                    val text = mutableStateText.collectAsState()
 
-                    SpeedTestScreen(speed.value, maxSpeed.value, ping.value, !isEnables.value) {
+                    SpeedTestScreen(text.value, speed.value, maxSpeed.value, ping.value, !isEnables.value) {
                         lifecycleScope.launch(Dispatchers.IO) {
                             mutableStateIsProgress.value = true
-                            mutableStatePing.value = Ping.getPingTime("www.google.com")
                             test.run()
+                            mutableStatePing.value = Ping.getPingTime("www.google.com")
+                            mutableStateText.value = "RESTART"
                             mutableStateIsProgress.value = false
-
                         }
                     }
                 }
